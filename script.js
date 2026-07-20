@@ -40,3 +40,138 @@ headerLineExtension.textContent = `
 document.head.appendChild(headerLineExtension);
 const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('shown'); }), { threshold: 0.12 });
 document.querySelectorAll('.reveal, .service-card, .project, .detail-list article, .case').forEach((el) => observer.observe(el));
+
+const enquiryUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdmMzbyJTbHjOdFrkWx8YLRt3ZrQ-f3NFz_hkxbewfzSuqM5g/viewform';
+const chatStyle = document.createElement('style');
+chatStyle.textContent = `
+  .redtro-chat{position:fixed;right:24px;bottom:24px;z-index:30;font-family:Manrope,Arial,sans-serif}
+  .chat-toggle{width:56px;height:56px;border:1px solid rgba(190,244,255,.62);border-radius:18px;background:linear-gradient(145deg,#c7f8ff,#72dafc 48%,#1f74e5);box-shadow:0 13px 35px rgba(0,145,255,.34),inset 0 1px rgba(255,255,255,.72);color:#06152b;font-size:23px;font-weight:800;cursor:pointer;transition:transform .25s ease,box-shadow .25s ease}
+  .chat-toggle:hover{transform:translateY(-4px);box-shadow:0 18px 45px rgba(0,171,255,.44),inset 0 1px rgba(255,255,255,.8)}
+  .chat-panel{position:absolute;right:0;bottom:68px;width:min(360px,calc(100vw - 32px));overflow:hidden;border:1px solid rgba(190,242,255,.22);border-radius:23px;background:rgba(7,14,34,.84);box-shadow:0 22px 70px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.08);backdrop-filter:blur(25px);opacity:0;transform:translateY(14px) scale(.98);pointer-events:none;transition:opacity .22s ease,transform .22s ease}
+  .redtro-chat.open .chat-panel{opacity:1;transform:none;pointer-events:auto}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:17px 18px 15px;border-bottom:1px solid rgba(190,242,255,.12)}
+  .chat-mark{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#d3fbff,#67cffa 45%,#1769dc);color:#06152b;font:800 15px Manrope;box-shadow:0 0 18px rgba(96,224,255,.32)}
+  .chat-head strong{font-size:13px}.chat-head span{display:block;margin-top:1px;color:#82e6ff;font:10px 'DM Mono',monospace}.chat-close{margin-left:auto;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#a6b9c7;font-size:20px;cursor:pointer}
+  .chat-messages{height:256px;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin;scrollbar-color:#477ea0 transparent}
+  .chat-bubble{max-width:87%;padding:10px 12px;border-radius:14px;font-size:12px;line-height:1.55}.chat-bubble.bot{align-self:flex-start;background:rgba(151,229,255,.1);border:1px solid rgba(176,239,255,.12);color:#d8f5ff;border-bottom-left-radius:4px}.chat-bubble.user{align-self:flex-end;background:#b9efff;color:#071422;border-bottom-right-radius:4px}
+  .chat-prompts{display:flex;gap:7px;overflow:auto;padding:0 16px 12px}.chat-prompts button{flex:0 0 auto;border:1px solid rgba(164,230,255,.22);border-radius:99px;background:rgba(151,229,255,.06);padding:7px 9px;color:#c5f3ff;font:600 10px Manrope;cursor:pointer}.chat-prompts button:hover{background:rgba(151,229,255,.15)}
+  .chat-form{display:flex;gap:8px;padding:12px 14px 14px;border-top:1px solid rgba(190,242,255,.1)}.chat-form input{min-width:0;border:1px solid rgba(190,242,255,.16);border-radius:10px;background:rgba(255,255,255,.045);padding:10px;color:#ecfbff;font:12px Manrope}.chat-form input:focus{border-color:#84e7ff}.chat-form button{border:0;border-radius:10px;background:#b9efff;padding:0 12px;color:#071422;font-weight:800;cursor:pointer}.chat-complete-link{display:inline-flex;margin-top:9px;padding:9px 11px;border-radius:9px;background:#b9efff;color:#071422!important;text-decoration:none;font-size:11px;font-weight:800}
+  @media(max-width:760px){.redtro-chat{right:18px;bottom:18px}.chat-panel{bottom:66px}.chat-toggle{width:52px;height:52px;border-radius:16px}}
+`;
+document.head.appendChild(chatStyle);
+
+const chatWidget = document.createElement('aside');
+chatWidget.className = 'redtro-chat';
+chatWidget.setAttribute('aria-label', 'Redtro website assistant');
+chatWidget.innerHTML = `
+  <section class="chat-panel" aria-live="polite">
+    <div class="chat-head"><div class="chat-mark">R</div><div><strong>Redtro Assistant</strong><span>ONLINE · HERE TO HELP</span></div><button class="chat-close" type="button" aria-label="Close chat">×</button></div>
+    <div class="chat-messages"><div class="chat-bubble bot">Hi! I can help you explore websites, AI automations, and AI agents. Ask a question, or choose “Start a project” and I’ll take your details here.</div></div>
+    <div class="chat-prompts"><button type="button" data-chat="Website pricing">Website pricing</button><button type="button" data-chat="AI automation">AI automation</button><button type="button" data-chat="Start a project">Start a project</button></div>
+    <form class="chat-form"><input aria-label="Message Redtro" autocomplete="off" placeholder="Ask a question..." /><button type="submit" aria-label="Send message">↑</button></form>
+  </section>
+  <button class="chat-toggle" type="button" aria-label="Open Redtro chat">R</button>
+`;
+document.body.appendChild(chatWidget);
+
+const chatPanel = chatWidget.querySelector('.chat-panel');
+const chatMessages = chatWidget.querySelector('.chat-messages');
+const chatInput = chatWidget.querySelector('.chat-form input');
+const addChatMessage = (kind, message) => {
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble ${kind}`;
+  bubble.textContent = message;
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+};
+const chatApplication = { active: false, step: '', fullName: '', email: '', phone: '', service: '' };
+const getChatReply = (message) => {
+  const question = message.toLowerCase();
+  if (question.includes('website') || question.includes('web')) return 'Website projects start from ₹20,000. We build fast, premium sites that make your brand feel credible from the first scroll.';
+  if (question.includes('automation') || question.includes('automate')) return 'AI automations start from ₹10,000. We connect your lead capture, follow-ups, notifications, and operations so work keeps moving.';
+  if (question.includes('agent') || question.includes('chatbot')) return 'Our AI agents are tailored to your business—handling leads, support, scheduling, research, and more. Tell us what you want the agent to do.';
+  if (question.includes('price') || question.includes('cost') || question.includes('budget')) return 'Websites begin at ₹20,000 and AI automations begin at ₹10,000. AI agents are quoted based on the work they need to handle.';
+  if (question.includes('start') || question.includes('project') || question.includes('contact') || question.includes('quote') || question.includes('apply')) return 'I can take your enquiry here. What is your full name?';
+  return 'Thanks for sharing. For a tailored recommendation and quote, please use our enquiry form—our team will reply by email.';
+};
+const serviceFromMessage = (message) => {
+  const value = message.toLowerCase();
+  if (value.includes('website') || value.includes('web')) return 'websit with ai';
+  if (value.includes('agent')) return 'ai agent';
+  if (value.includes('automation') || value.includes('automate')) return 'AI automations';
+  return '';
+};
+const startApplication = () => {
+  chatApplication.active = true;
+  chatApplication.step = 'name';
+  chatApplication.fullName = '';
+  chatApplication.email = '';
+  chatApplication.phone = '';
+  chatApplication.service = '';
+  addChatMessage('bot', 'Great—what is your full name?');
+};
+const showCompletedApplication = () => {
+  const params = new URLSearchParams({
+    usp: 'pp_url',
+    'entry.731666129': chatApplication.fullName,
+    'entry.44425736': chatApplication.email,
+    'entry.100926193': chatApplication.phone,
+    'entry.370895404': chatApplication.service
+  });
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble bot';
+  bubble.textContent = 'Your details are ready. Open the completed enquiry form to review and submit it.';
+  const completeLink = document.createElement('a');
+  completeLink.className = 'chat-complete-link';
+  completeLink.href = `${enquiryUrl}?${params.toString()}`;
+  completeLink.target = '_blank';
+  completeLink.rel = 'noopener';
+  completeLink.textContent = 'Open completed form ↗';
+  bubble.appendChild(completeLink);
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatApplication.active = false;
+};
+const handleApplicationAnswer = (message) => {
+  if (chatApplication.step === 'name') {
+    chatApplication.fullName = message;
+    chatApplication.step = 'email';
+    addChatMessage('bot', 'Thanks. What is your email address?');
+    return;
+  }
+  if (chatApplication.step === 'email') {
+    if (!/^\S+@\S+\.\S+$/.test(message)) { addChatMessage('bot', 'Please enter a valid email address so we can reply to you.'); return; }
+    chatApplication.email = message;
+    chatApplication.step = 'phone';
+    addChatMessage('bot', 'What is your mobile number?');
+    return;
+  }
+  if (chatApplication.step === 'phone') {
+    if (message.replace(/\D/g, '').length < 10) { addChatMessage('bot', 'Please enter a valid mobile number (at least 10 digits).'); return; }
+    chatApplication.phone = message;
+    chatApplication.step = 'service';
+    addChatMessage('bot', 'Which service do you need: Website with AI, AI agent, or AI automations?');
+    return;
+  }
+  if (chatApplication.step === 'service') {
+    const service = serviceFromMessage(message);
+    if (!service) { addChatMessage('bot', 'Please choose one: Website with AI, AI agent, or AI automations.'); return; }
+    chatApplication.service = service;
+    showCompletedApplication();
+  }
+};
+const sendChatMessage = (message) => {
+  const cleanMessage = message.trim();
+  if (!cleanMessage) return;
+  addChatMessage('user', cleanMessage);
+  chatInput.value = '';
+  if (chatApplication.active) { window.setTimeout(() => handleApplicationAnswer(cleanMessage), 250); return; }
+  if (/start|project|contact|quote|apply/i.test(cleanMessage)) { window.setTimeout(startApplication, 250); return; }
+  window.setTimeout(() => {
+    addChatMessage('bot', getChatReply(cleanMessage));
+  }, 350);
+};
+chatWidget.querySelector('.chat-toggle').addEventListener('click', () => { chatWidget.classList.toggle('open'); if (chatWidget.classList.contains('open')) chatInput.focus(); });
+chatWidget.querySelector('.chat-close').addEventListener('click', () => chatWidget.classList.remove('open'));
+chatWidget.querySelector('.chat-form').addEventListener('submit', (event) => { event.preventDefault(); sendChatMessage(chatInput.value); });
+chatWidget.querySelectorAll('[data-chat]').forEach((button) => button.addEventListener('click', () => sendChatMessage(button.dataset.chat)));
