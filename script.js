@@ -175,3 +175,15 @@ chatWidget.querySelector('.chat-toggle').addEventListener('click', () => { chatW
 chatWidget.querySelector('.chat-close').addEventListener('click', () => chatWidget.classList.remove('open'));
 chatWidget.querySelector('.chat-form').addEventListener('submit', (event) => { event.preventDefault(); sendChatMessage(chatInput.value); });
 chatWidget.querySelectorAll('[data-chat]').forEach((button) => button.addEventListener('click', () => sendChatMessage(button.dataset.chat)));
+
+const workGrid = document.querySelector('.case-grid');
+if (workGrid) {
+  const hrDashboardStyle = document.createElement('style');
+  hrDashboardStyle.textContent = `
+    .hr-dashboard .case-screen{background:radial-gradient(circle at 82% 10%,rgba(90,226,255,.3),transparent 27%),linear-gradient(145deg,#071b38,#0b3158);padding:24px;color:#ecfbff}.hr-dashboard small{color:#94eaff}.hr-dashboard h2{margin:32px 0 0;font-size:43px;line-height:.94}.hr-dashboard h2 span{color:#93edff}.hr-window{position:absolute;right:20px;bottom:19px;left:20px;display:grid;grid-template-columns:1.35fr .8fr;gap:9px;padding:11px;border:1px solid rgba(202,246,255,.22);border-radius:12px;background:rgba(2,19,44,.58);backdrop-filter:blur(9px)}.hr-chart{height:67px;padding:9px;background:rgba(162,235,255,.08);border-radius:8px}.hr-chart span{display:block;color:#8ddff7;font:9px 'DM Mono',monospace}.hr-chart i{display:block;width:100%;height:31px;margin-top:8px;background:linear-gradient(135deg,transparent 0 8%,#80eaff 9% 12%,transparent 13% 24%,#80eaff 25% 29%,transparent 30% 48%,#80eaff 49% 53%,transparent 54% 67%,#80eaff 68% 72%,transparent 73%);opacity:.95}.hr-stat{display:flex;flex-direction:column;justify-content:center;padding:10px;border-radius:8px;background:linear-gradient(145deg,rgba(103,219,255,.23),rgba(14,88,154,.38))}.hr-stat b{font-size:25px;letter-spacing:-.07em}.hr-stat span{margin-top:2px;color:#c6f6ff;font:9px 'DM Mono',monospace}
+  `;
+  document.head.appendChild(hrDashboardStyle);
+  workGrid.insertAdjacentHTML('beforeend', `
+    <article class="case hr-dashboard"><div class="case-screen"><small>PEOPLE / OVERVIEW</small><h2>People, in<br /><span>focus.</span></h2><div class="hr-window"><div class="hr-chart"><span>TEAM ACTIVITY</span><i></i></div><div class="hr-stat"><b>48</b><span>TEAM MEMBERS</span></div></div></div><div class="case-caption"><div><h3>HR Dashboard</h3><p>Workforce analytics · HR operations</p></div><span>05</span></div></article>
+  `);
+}
