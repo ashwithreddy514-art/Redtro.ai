@@ -12,5 +12,16 @@ visualRefinement.textContent = `
   @media (min-width:761px){.services-preview{grid-template-columns:1.18fr .82fr;grid-template-rows:1fr 1fr;gap:16px}.services-preview .service-card.featured{grid-row:span 2;min-height:640px}.services-preview .service-card:not(.featured){min-height:312px}.services-preview .service-card:not(.featured) .service-icon{margin:21px 0 17px}.services-preview .service-card:not(.featured) h3{font-size:23px}.services-preview .service-card:not(.featured) p{margin-bottom:0}}
 `;
 document.head.appendChild(visualRefinement);
+const cardLayoutCorrection = document.createElement('style');
+cardLayoutCorrection.textContent = `
+  @media (min-width:761px){
+    .services-preview{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto;gap:16px}
+    .services-preview .service-card.featured,.services-preview .service-card:not(.featured){grid-row:auto;min-height:440px}
+    .services-preview .service-card:not(.featured) .service-icon{margin:37px 0 25px}
+    .services-preview .service-card:not(.featured) h3{font-size:25px}
+    .services-preview .service-card:not(.featured) p{margin-bottom:0}
+  }
+`;
+document.head.appendChild(cardLayoutCorrection);
 const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('shown'); }), { threshold: 0.12 });
 document.querySelectorAll('.reveal, .service-card, .project, .detail-list article, .case').forEach((el) => observer.observe(el));
