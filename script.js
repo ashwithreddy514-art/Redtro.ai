@@ -1,6 +1,16 @@
 document.documentElement.classList.add('js');
 const primaryNav = document.querySelector('.nav > nav');
 if (primaryNav) Object.assign(primaryNav.style, { position: 'absolute', left: '50%', transform: 'translateX(-50%)' });
+document.querySelectorAll('.brand').forEach((brand) => {
+  brand.innerHTML = '<span class="logo-mark">R</span><span class="logo-word">Redtro</span><span class="logo-ai">.ai</span>';
+});
+const logoStyling = document.createElement('style');
+logoStyling.textContent = `
+  .brand{display:inline-flex!important;align-items:center;gap:7px;letter-spacing:-.045em!important}
+  .logo-mark{display:grid!important;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(145deg,#d3fbff,#67cffa 45%,#1769dc);border:1px solid rgba(231,255,255,.7);box-shadow:0 0 20px rgba(96,224,255,.38),inset 0 1px rgba(255,255,255,.6);color:#06152b!important;font:800 14px Manrope!important;letter-spacing:-.12em}
+  .logo-word{color:#f1fbff!important;font:800 20px Manrope!important}.logo-ai{color:#8feaff!important;font:600 20px Manrope!important}
+`;
+document.head.appendChild(logoStyling);
 const visualRefinement = document.createElement('style');
 visualRefinement.textContent = `
   body{background:#050816} body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 15%,rgba(47,163,255,.14),transparent 30%),radial-gradient(circle at 85% 58%,rgba(63,221,255,.09),transparent 29%);z-index:-1}
