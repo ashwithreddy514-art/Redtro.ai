@@ -62,6 +62,16 @@ cardLayoutCorrection.textContent = `
     .services-preview .service-card:not(.featured) h3{font-size:25px}
     .services-preview .service-card:not(.featured) p{margin-bottom:0}
   }
+  @media (max-width:760px){
+    .services-preview{gap:18px}
+    .services-preview .service-card{min-height:0;padding:28px 28px 27px}
+    .services-preview .service-card .service-icon{margin:29px 0 23px}
+    .services-preview .service-card h3{margin-bottom:14px}
+    .services-preview .service-card p{margin-bottom:22px}
+    .services-preview .service-card .price,.services-preview .service-card>a{position:static;display:block}
+    .services-preview .service-card .price{margin:0 0 11px}
+    .services-preview .service-card>a{line-height:1.3}
+  }
 `;
 document.head.appendChild(cardLayoutCorrection);
 const headerLineExtension = document.createElement('style');
