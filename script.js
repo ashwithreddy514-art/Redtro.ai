@@ -1,6 +1,37 @@
 document.documentElement.classList.add('js');
 const primaryNav = document.querySelector('.nav > nav');
 if (primaryNav) Object.assign(primaryNav.style, { position: 'absolute', left: '50%', transform: 'translateX(-50%)' });
+if (primaryNav) {
+  const header = primaryNav.closest('.nav');
+  const mobileMenuButton = document.createElement('button');
+  mobileMenuButton.className = 'mobile-menu-toggle';
+  mobileMenuButton.type = 'button';
+  mobileMenuButton.setAttribute('aria-label', 'Open navigation menu');
+  mobileMenuButton.setAttribute('aria-expanded', 'false');
+  mobileMenuButton.innerHTML = '<span></span><span></span>';
+  header.appendChild(mobileMenuButton);
+  mobileMenuButton.addEventListener('click', () => {
+    const isOpen = header.classList.toggle('mobile-open');
+    mobileMenuButton.setAttribute('aria-expanded', String(isOpen));
+    mobileMenuButton.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+  });
+  primaryNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => header.classList.remove('mobile-open')));
+  const mobileMenuStyle = document.createElement('style');
+  mobileMenuStyle.textContent = `
+    .mobile-menu-toggle{display:none}
+    @media(max-width:760px){
+      .nav{position:relative}
+      .mobile-menu-toggle{display:grid;place-content:center;gap:5px;width:39px;height:39px;border:1px solid rgba(180,238,255,.28);border-radius:12px;background:rgba(137,230,255,.08);cursor:pointer}
+      .mobile-menu-toggle span{display:block;width:17px;height:1.5px;border-radius:2px;background:#c9f8ff;transition:transform .22s ease,opacity .22s ease}
+      .nav.mobile-open .mobile-menu-toggle span:first-child{transform:translateY(3.25px) rotate(45deg)}
+      .nav.mobile-open .mobile-menu-toggle span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
+      .nav nav{display:none!important}
+      .nav.mobile-open nav{display:flex!important;position:absolute!important;left:0!important;right:0!important;top:calc(100% + 10px)!important;transform:none!important;z-index:20;flex-direction:column;gap:0;padding:8px;border:1px solid rgba(190,242,255,.2);border-radius:17px;background:rgba(6,13,31,.94);box-shadow:0 18px 45px rgba(0,0,0,.34);backdrop-filter:blur(22px)}
+      .nav.mobile-open nav a{padding:12px 13px;border-radius:10px;font-size:13px}.nav.mobile-open nav a:hover,.nav.mobile-open nav a.active{background:rgba(143,232,255,.1)}
+    }
+  `;
+  document.head.appendChild(mobileMenuStyle);
+}
 document.querySelectorAll('.brand').forEach((brand) => {
   brand.innerHTML = '<span class="logo-mark">R</span><span class="logo-word">Redtro</span><span class="logo-ai">.ai</span>';
 });
