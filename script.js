@@ -74,6 +74,17 @@ cardLayoutCorrection.textContent = `
   }
 `;
 document.head.appendChild(cardLayoutCorrection);
+const mobileHeroStability = document.createElement('style');
+mobileHeroStability.textContent = `
+  @media (max-width:760px){
+    .hero{min-height:760px;padding-top:78px}
+    .hero-copy{max-width:330px}
+    .hero-actions{position:relative;z-index:2}
+    .hero-orbit{top:405px;right:-62px;transform:scale(.62);transform-origin:top right;pointer-events:none}
+    .hero-bottom{bottom:32px}
+  }
+`;
+document.head.appendChild(mobileHeroStability);
 const headerLineExtension = document.createElement('style');
 headerLineExtension.textContent = `
   @media (min-width:761px){.nav.wrap{width:calc(100% - 64px);max-width:none}}
